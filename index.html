@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEMOH AGRO MILL</title>
+<style>
+:root{--green:#0a5c36;--light:#e8f5e9;--yellow:#ffcc00}
+*{box-sizing:border-box;font-family:system-ui,Arial}
+body{margin:0;background:#f4f6f4;color:#222}
+header{background:var(--green);color:#fff;padding:16px;text-align:center;position:sticky;top:0;z-index:10}
+header h1{margin:0;font-size:20px;letter-spacing:.5px}
+header p{margin:4px 0 0;font-size:12px;opacity:.9}
+.tabs{display:flex;background:#fff;border-bottom:2px solid var(--green);position:sticky;top:66px;z-index:9}
+.tabs button{flex:1;padding:12px;border:0;background:#fff;font-weight:700;cursor:pointer}
+.tabs button.active{background:var(--green);color:#fff}
+.container{padding:12px;max-width:700px;margin:0 auto}
+.card{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+label{font-size:12px;font-weight:700;display:block;margin:8px 0 4px}
+input,select{width:100%;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:14px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn{width:100%;padding:12px;border:0;border-radius:10px;font-weight:800;cursor:pointer;margin-top:10px}
+.btn-green{background:var(--green);color:#fff}
+.btn-yellow{background:var(--yellow);color:#000}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px;border-bottom:1px solid #eee;text-align:left}
+th{background:var(--light)}
+.badge{padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700}
+.paid{background:#c8f7c5} .debt{background:#ffd6d6}
+.summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.summary div{background:var(--light);padding:10px;border-radius:10px;text-align:center}
+.summary b{display:block;font-size:18px;color:var(--green)}
+.small{font-size:11px;color:#666}
+</style>
+</head>
+<body>
+<header>
+<h1>MEMOH AGRO MILL</h1>
+<p>Cassava Grating • Palm Kernel Crushing • Daily Manager</p>
+</header>
+
+<div class="tabs">
+<button id="t1" class="active" onclick="showTab('sales')">SALES</button>
+<button id="t2" onclick="showTab('expense')">EXPENSES</button>
+<button id="t3" onclick="showTab('report')">DAILY LIST</button>
+</div>
+
+<div class="container">
+<div id="salesTab">
+<div class="card">
+<label>Date</label><input type="date" id="sDate">
+<label>Customer Name *</label><input type="text" id="sName" placeholder="e.g. Mama Nkechi">
+<label>Service *</label>
+<select id="sService">
+<option value="Cassava Grating">Cassava Grating</option>
+<option value="Palm Kernel Shell Crushing">Palm Kernel Shell Crushing</option>
+</select>
+<div class="row">
+<div><label>Qty (bags)</label><input type="number" id="sQty" placeholder="e.g. 5"></div>
+<div><label>Machine Used</label><select id="sMachine"><option>Grater</option><option>PKS Crusher</option></select></div>
+</div>
+<div class="row">
+<div><label>Generator</
