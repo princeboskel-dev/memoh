@@ -25,12 +25,12 @@ body{background-color:#0b1329;color:#fff;font-family:-apple-system,BlinkMacSyste
 .nav-item{text-align:center;color:#94a3b8;text-decoration:none;font-size:11px;cursor:pointer;background:none;border:none}
 .nav-item.active{color:#facc15}
 .nav-item i{font-size:18px;display:block;margin-bottom:2px}
-.form-control,.form-select{background-color:#101a35;color:#fff;border:1px solid rgba(255,255,255,0.1);font-size:14px;padding:10px 12px}
-.form-control::placeholder{color:#94a3b8;opacity:1}
-.form-control:focus,.form-select:focus{background-color:#101a35;color:#fff;border-color:#3b82f6;box-shadow:none}
+/* GREY BOXES - LIGHT GREY, BLACK TEXT - EASY TO SEE */
+.form-control,.form-select{background-color:#c9cdd6!important;color:#000000!important;border:1px solid #9aa0ad!important;font-size:15px!important;font-weight:600!important;padding:12px 12px!important;border-radius:10px!important}
+.form-control::placeholder{color:#555b66!important;opacity:1;font-weight:500}
+.form-control:focus,.form-select:focus{background-color:#d9dde4!important;color:#000!important;border-color:#facc15!important;box-shadow:0 0 0 2px rgba(250,204,21,0.3)!important}
 .tab-content{display:none}.tab-content.active{display:block}
 #syncStatus{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(34,197,94,0.2);color:#4ade80}
-/* FIXED LABELS - BIG WHITE, CLEAR CLUE */
 .field-label{display:block;color:#ffffff!important;font-size:14px!important;font-weight:700!important;margin-bottom:6px;margin-top:4px}
 .field-hint{color:#facc15;font-size:12px;font-weight:400}
 </style>
@@ -60,7 +60,6 @@ body{background-color:#0b1329;color:#fff;font-family:-apple-system,BlinkMacSyste
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div class="section-title" style="margin-bottom:0">Daily Activity Log</div><input type="date" id="filterDate" class="form-control form-control-sm w-auto" onchange="renderApp()"></div>
 <div id="recentActivityList"><div class="text-center text-muted py-4" style="font-size:13px">Connecting to Firebase...</div></div>
 </div>
-
 <div id="tab-sales" class="tab-content">
 <div class="section-title" id="saleFormTitle">Record Service Sale</div>
 <div class="card-custom"><form id="saleForm" onsubmit="handleSaleSubmit(event)"><input type="hidden" id="editSaleId">
@@ -72,7 +71,6 @@ body{background-color:#0b1329;color:#fff;font-family:-apple-system,BlinkMacSyste
 <input type="number" step="0.01" class="form-control mb-3" id="saleAmount" required placeholder="e.g. 5000">
 <button type="submit" class="btn btn-success w-100 btn-sm py-2" id="saleSubmitBtn">Save Sale Record</button><button type="button" class="btn btn-secondary w-100 btn-sm py-2 mt-2 d-none" id="cancelSaleEditBtn" onclick="resetSaleForm()">Cancel Edit</button></form></div>
 </div>
-
 <div id="tab-expenses" class="tab-content">
 <div class="section-title" id="expFormTitle">Record Expense (Diesel & Maintenance)</div>
 <div class="card-custom">
@@ -89,7 +87,6 @@ body{background-color:#0b1329;color:#fff;font-family:-apple-system,BlinkMacSyste
 </form>
 </div>
 </div>
-
 <div id="tab-reports" class="tab-content">
 <div class="section-title">Performance Reports & Graphs</div>
 <div class="card-custom mb-3"><div class="mb-2"><label class="field-label">Report Filter Type</label><select class="form-select" id="reportType" onchange="toggleReportInputs()"><option value="monthly">Monthly Summary</option><option value="range">Custom Date Range</option></select></div><div class="mb-2" id="monthlyInputGroup"><label class="field-label">Select Month</label><input type="month" class="form-control" id="reportMonth" onchange="generateReport()"></div><div class="row g-2 d-none" id="rangeInputGroup"><div class="col-6"><label class="field-label">Start Date</label><input type="date" class="form-control" id="reportStartDate" onchange="generateReport()"></div><div class="col-6"><label class="field-label">End Date</label><input type="date" class="form-control" id="reportEndDate" onchange="generateReport()"></div></div></div>
