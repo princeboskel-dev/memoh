@@ -25,7 +25,6 @@ body{background-color:#0b1329;color:#fff;font-family:-apple-system,BlinkMacSyste
 .nav-item{text-align:center;color:#94a3b8;text-decoration:none;font-size:11px;cursor:pointer;background:none;border:none}
 .nav-item.active{color:#facc15}
 .nav-item i{font-size:18px;display:block;margin-bottom:2px}
-/* GREY BOXES - LIGHT GREY, BLACK TEXT - EASY TO SEE */
 .form-control,.form-select{background-color:#c9cdd6!important;color:#000000!important;border:1px solid #9aa0ad!important;font-size:15px!important;font-weight:600!important;padding:12px 12px!important;border-radius:10px!important}
 .form-control::placeholder{color:#555b66!important;opacity:1;font-weight:500}
 .form-control:focus,.form-select:focus{background-color:#d9dde4!important;color:#000!important;border-color:#facc15!important;box-shadow:0 0 0 2px rgba(250,204,21,0.3)!important}
@@ -101,7 +100,7 @@ body{background-color:#0b1329;color:#fff;font-family:-apple-system,BlinkMacSyste
 <button class="nav-item" onclick="switchTab('reports')" id="nav-btn-reports"><i class="fa-solid fa-chart-pie"></i>Reports</button>
 </div>
 <script>
-const firebaseConfig = {
+var firebaseConfig = {
   apiKey: "AIzaSyB-Y0g-Zoq6fRvoEY1wdOYQFRlK7B2mzfA",
   authDomain: "memoh-agro.firebaseapp.com",
   databaseURL: "https://memoh-agro-default-rtdb.firebaseio.com",
@@ -111,14 +110,21 @@ const firebaseConfig = {
   appId: "1:805958131176:web:281c42b291a88364ebd85d"
 };
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-const salesRef = db.ref('sales');
-const expensesRef = db.ref('expenses');
-let sales = [];
-let expenses = [];
-let performanceChart = null;
-const todayStr = new Date().toISOString().split('T')[0];
-const currentMonthStr = todayStr.slice(0,7);
+var db = firebase.database();
+var salesRef = db.ref('sales');
+var expensesRef = db.ref('expenses');
+var sales = [];
+var expenses = [];
+var performanceChart = null;
+function getToday(){
+  var d = new Date();
+  var y = d.getFullYear();
+  var m = ('0' + (d.getMonth()+1)).slice(-2);
+  var day = ('0' + d.getDate()).slice(-2);
+  return y + '-' + m + '-' + day;
+}
+var todayStr = getToday();
+var currentMonthStr = todayStr.slice(0,7);
 document.getElementById('saleDate').value = todayStr;
 document.getElementById('expDate').value = todayStr;
 document.getElementById('filterDate').value = todayStr;
@@ -126,110 +132,155 @@ document.getElementById('currentDateDisplay').innerText = todayStr;
 document.getElementById('reportMonth').value = currentMonthStr;
 document.getElementById('reportStartDate').value = todayStr;
 document.getElementById('reportEndDate').value = todayStr;
-salesRef.on('value', snap => {
-  const data = snap.val() || {};
-  sales = Object.keys(data).map(k => ({ id: k, ...data[k] }));
+salesRef.on('value', function(snap){
+  var data = snap.val() || {};
+  sales = Object.keys(data).map(function(k){ var o = data[k]; o.id = k; return o; });
   renderApp();
 });
-expensesRef.on('value', snap => {
-  const data = snap.val() || {};
-  expenses = Object.keys(data).map(k => ({ id: k, ...data[k] }));
+expensesRef.on('value', function(snap){
+  var data = snap.val() || {};
+  expenses = Object.keys(data).map(function(k){ var o = data[k]; o.id = k; return o; });
   renderApp();
 });
 function switchTab(tabName){
-  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll('.bottom-nav .nav-item').forEach(el=>el.classList.remove('active'));
-  document.getElementById('tab-'+tabName).classList.add('active');
-  document.getElementById('nav-btn-'+tabName).classList.add('active');
+  var tabs = document.querySelectorAll('.tab-content');
+  for(var i=0;i<tabs.length;i++){ tabs[i].classList.remove('active'); }
+  var navs = document.querySelectorAll('.bottom-nav .nav-item');
+  for(var j=0;j<navs.length;j++){ navs[j].classList.remove('active'); }
+  document.getElementById('tab-' + tabName).classList.add('active');
+  document.getElementById('nav-btn-' + tabName).classList.add('active');
   window.scrollTo(0,0);
-  if(tabName==='reports') generateReport();
+  if(tabName === 'reports'){ generateReport(); }
 }
 function handleSaleSubmit(e){
   e.preventDefault();
-  const editId=document.getElementById('editSaleId').value;
-  const date=document.getElementById('saleDate').value;
-  const serviceType=document.getElementById('saleService').value;
-  const amount=parseFloat(document.getElementById('saleAmount').value);
+  var editId = document.getElementById('editSaleId').value;
+  var date = document.getElementById('saleDate').value;
+  var serviceType = document.getElementById('saleService').value;
+  var amount = parseFloat(document.getElementById('saleAmount').value);
   if(serviceType && !isNaN(amount)){
-    if(editId){ salesRef.child(editId).update({date,serviceType,amount}); alert('Sale updated in Firebase!'); }
-    else { salesRef.push({date,serviceType,amount}); alert('Sale saved to Firebase!'); }
+    if(editId){ salesRef.child(editId).update({date:date, serviceType:serviceType, amount:amount}); alert('Sale updated!'); }
+    else { salesRef.push({date:date, serviceType:serviceType, amount:amount}); alert('Sale saved to Firebase!'); }
     resetSaleForm(); switchTab('home');
   }
 }
 function editSale(id){
-  let sale=sales.find(s=>s.id==id);
-  if(sale){ document.getElementById('editSaleId').value=sale.id; document.getElementById('saleDate').value=sale.date; document.getElementById('saleService').value=sale.serviceType; document.getElementById('saleAmount').value=sale.amount; document.getElementById('saleFormTitle').innerText='Edit Service Sale'; document.getElementById('saleSubmitBtn').innerText='Update Sale Record'; document.getElementById('cancelSaleEditBtn').classList.remove('d-none'); switchTab('sales'); }
+  var sale = null;
+  for(var i=0;i<sales.length;i++){ if(sales[i].id == id){ sale = sales[i]; } }
+  if(sale){ document.getElementById('editSaleId').value = sale.id; document.getElementById('saleDate').value = sale.date; document.getElementById('saleService').value = sale.serviceType; document.getElementById('saleAmount').value = sale.amount; document.getElementById('saleFormTitle').innerText = 'Edit Service Sale'; document.getElementById('saleSubmitBtn').innerText = 'Update Sale Record'; document.getElementById('cancelSaleEditBtn').classList.remove('d-none'); switchTab('sales'); }
 }
 function resetSaleForm(){ document.getElementById('saleForm').reset(); document.getElementById('editSaleId').value=''; document.getElementById('saleDate').value=todayStr; document.getElementById('saleFormTitle').innerText='Record Service Sale'; document.getElementById('saleSubmitBtn').innerText='Save Sale Record'; document.getElementById('cancelSaleEditBtn').classList.add('d-none'); }
 function handleExpenseSubmit(e){
   e.preventDefault();
-  const editId=document.getElementById('editExpId').value;
-  const date=document.getElementById('expDate').value;
-  const category="Expense";
-  const equipment="General";
-  const description=document.getElementById('expDesc').value.trim();
-  const amount=parseFloat(document.getElementById('expAmount').value);
+  var editId = document.getElementById('editExpId').value;
+  var date = document.getElementById('expDate').value;
+  var description = document.getElementById('expDesc').value.trim();
+  var amount = parseFloat(document.getElementById('expAmount').value);
   if(!isNaN(amount)){
-    if(editId){ expensesRef.child(editId).update({date,category,equipment,description,amount}); alert('Expense updated in Firebase!'); }
-    else { expensesRef.push({date,category,equipment,description,amount}); alert('Expense saved to Firebase!'); }
+    if(editId){ expensesRef.child(editId).update({date:date, category:'Expense', equipment:'General', description:description, amount:amount}); alert('Expense updated!'); }
+    else { expensesRef.push({date:date, category:'Expense', equipment:'General', description:description, amount:amount}); alert('Expense saved to Firebase!'); }
     resetExpForm(); switchTab('home');
   }
 }
 function editExpense(id){
-  let exp=expenses.find(e=>e.id==id);
+  var exp = null;
+  for(var i=0;i<expenses.length;i++){ if(expenses[i].id == id){ exp = expenses[i]; } }
   if(exp){ document.getElementById('editExpId').value=exp.id; document.getElementById('expDate').value=exp.date; document.getElementById('expDesc').value=exp.description||''; document.getElementById('expAmount').value=exp.amount; document.getElementById('expFormTitle').innerText='Edit Expense Record'; document.getElementById('expSubmitBtn').innerText='Update Expense Record'; document.getElementById('cancelExpEditBtn').classList.remove('d-none'); switchTab('expenses'); }
 }
 function resetExpForm(){ document.getElementById('expenseForm').reset(); document.getElementById('editExpId').value=''; document.getElementById('expDate').value=todayStr; document.getElementById('expFormTitle').innerText='Record Expense (Diesel & Maintenance)'; document.getElementById('expSubmitBtn').innerText='Save Expense Record'; document.getElementById('cancelExpEditBtn').classList.add('d-none'); }
 function deleteItem(id,type){
   if(confirm('Are you sure you want to delete this entry?')){
-    if(type==='sale') salesRef.child(id).remove();
-    if(type==='expense') expensesRef.child(id).remove();
+    if(type==='sale'){ salesRef.child(id).remove(); }
+    if(type==='expense'){ expensesRef.child(id).remove(); }
   }
 }
 function toggleReportInputs(){
-  const type=document.getElementById('reportType').value;
+  var type = document.getElementById('reportType').value;
   if(type==='monthly'){ document.getElementById('monthlyInputGroup').classList.remove('d-none'); document.getElementById('rangeInputGroup').classList.add('d-none'); }
   else { document.getElementById('monthlyInputGroup').classList.add('d-none'); document.getElementById('rangeInputGroup').classList.remove('d-none'); }
   generateReport();
 }
 function generateReport(){
-  const type=document.getElementById('reportType').value;
-  let filteredSales=[], filteredExpenses=[], periodText='';
-  if(type==='monthly'){ const monthVal=document.getElementById('reportMonth').value; if(!monthVal) return; filteredSales=sales.filter(s=>s.date.startsWith(monthVal)); filteredExpenses=expenses.filter(e=>e.date.startsWith(monthVal)); periodText='Monthly Summary: '+monthVal; }
-  else { const startVal=document.getElementById('reportStartDate').value; const endVal=document.getElementById('reportEndDate').value; if(!startVal||!endVal) return; filteredSales=sales.filter(s=>s.date>=startVal && s.date<=endVal); filteredExpenses=expenses.filter(e=>e.date>=startVal && e.date<=endVal); periodText='Range: '+startVal+' to '+endVal; }
-  document.getElementById('reportPeriodLabel').innerText=periodText;
-  const tSales=filteredSales.reduce((a,c)=>a+c.amount,0);
-  const tExps=filteredExpenses.reduce((a,c)=>a+c.amount,0);
-  const net=tSales-tExps;
-  document.getElementById('reportTotalSales').innerText='₦'+tSales.toFixed(2);
-  document.getElementById('reportTotalExpenses').innerText='₦'+tExps.toFixed(2);
-  const netElem=document.getElementById('reportNetProfit'); netElem.innerText='₦'+net.toFixed(2); netElem.className=net>=0?'text-white':'text-danger';
-  renderChart(tSales,tExps,net);
+  var type = document.getElementById('reportType').value;
+  var filteredSales = [];
+  var filteredExpenses = [];
+  var periodText = '';
+  if(type==='monthly'){
+    var monthVal = document.getElementById('reportMonth').value;
+    if(!monthVal){ return; }
+    filteredSales = sales.filter(function(s){ return s.date && s.date.indexOf(monthVal) === 0; });
+    filteredExpenses = expenses.filter(function(e){ return e.date && e.date.indexOf(monthVal) === 0; });
+    periodText = 'Monthly Summary: ' + monthVal;
+  } else {
+    var startVal = document.getElementById('reportStartDate').value;
+    var endVal = document.getElementById('reportEndDate').value;
+    if(!startVal || !endVal){ return; }
+    filteredSales = sales.filter(function(s){ return s.date >= startVal && s.date <= endVal; });
+    filteredExpenses = expenses.filter(function(e){ return e.date >= startVal && e.date <= endVal; });
+    periodText = 'Range: ' + startVal + ' to ' + endVal;
+  }
+  document.getElementById('reportPeriodLabel').innerText = periodText;
+  var tSales = 0; for(var i=0;i<filteredSales.length;i++){ tSales += Number(filteredSales[i].amount)||0; }
+  var tExps = 0; for(var j=0;j<filteredExpenses.length;j++){ tExps += Number(filteredExpenses[j].amount)||0; }
+  var net = tSales - tExps;
+  document.getElementById('reportTotalSales').innerText = '₦' + tSales.toFixed(2);
+  document.getElementById('reportTotalExpenses').innerText = '₦' + tExps.toFixed(2);
+  var netElem = document.getElementById('reportNetProfit');
+  netElem.innerText = '₦' + net.toFixed(2);
+  netElem.className = net >= 0 ? 'text-white' : 'text-danger';
+  renderChart(tSales, tExps, net);
 }
-function renderChart(income,expensesTotal,netProfit){
-  const ctx=document.getElementById('performanceChart').getContext('2d');
-  if(performanceChart) performanceChart.destroy();
-  performanceChart=new Chart(ctx,{
-    type:'bar',
-    data:{labels:['Income (Sales)','Expenses','Net Profit'],datasets:[{label:'Amount in ₦',data:[income,[STRIPPED]
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#94a3b8',font:{size:11}}},x:{grid:{display:false},ticks:{color:'#cbd5e1',font:{size:11}}}}}
+function renderChart(income, expensesTotal, netProfit){
+  var ctx = document.getElementById('performanceChart').getContext('2d');
+  if(performanceChart){ performanceChart.destroy(); }
+  performanceChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Income (Sales)', 'Expenses', 'Net Profit'],
+      datasets: [{
+        label: 'Amount in Naira',
+        data: [income, expensesTotal, netProfit],
+        backgroundColor: ['rgba(34,197,94,0.7)', 'rgba(239,68,68,0.7)', 'rgba(59,130,246,0.7)'],
+        borderColor: ['rgb(34,197,94)', 'rgb(239,68,68)', 'rgb(59,130,246)'],
+        borderWidth: 1,
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 11 } } },
+        x: { grid: { display: false }, ticks: { color: '#cbd5e1', font: { size: 11 } } }
+      }
+    }
   });
 }
 function renderApp(){
-  const selectedDate=document.getElementById('filterDate').value;
-  const filteredSales=sales.filter(s=>s.date===selectedDate);
-  const filteredExpenses=expenses.filter(e=>e.date===selectedDate);
-  const activityFeed=document.getElementById('recentActivityList');
-  let feedHtml='';
-  filteredSales.forEach(s=>{ feedHtml+='<div class="card-custom py-2 px-3 mb-2 d-flex justify-content-between align-items-center"><div style="font-size:12px"><span class="badge bg-success mb-1">Sale: '+s.serviceType+'</span></div><div class="text-end"><span class="text-success fw-bold" style="font-size:13px">+₦'+s.amount.toFixed(2)+'</span><br><button class="btn btn-link text-warning p-0 me-2" style="font-size:10px" onclick="editSale(\''+s.id+'\')">Edit</button><button class="btn btn-link text-danger p-0" style="font-size:10px" onclick="deleteItem(\''+s.id+'\',\'sale\')">Remove</button></div></div>'; });
-  filteredExpenses.forEach(e=>{ feedHtml+='<div class="card-custom py-2 px-3 mb-2 d-flex justify-content-between align-items-center"><div style="font-size:12px"><span class="badge bg-danger mb-1">Expense</span><br><strong>'+(e.description||'Expense')+'</strong></div><div class="text-end"><span class="text-danger fw-bold" style="font-size:13px">-₦'+e.amount.toFixed(2)+'</span><br><button class="btn btn-link text-warning p-0 me-2" style="font-size:10px" onclick="editExpense(\''+e.id+'\')">Edit</button><button class="btn btn-link text-danger p-0" style="font-size:10px" onclick="deleteItem(\''+e.id+'\',\'expense\')">Remove</button></div></div>'; });
-  if(feedHtml===''){ activityFeed.innerHTML='<div class="text-center text-muted py-4" style="font-size:13px">No activities recorded for this date yet.</div>'; } else { activityFeed.innerHTML=feedHtml; }
-  const totalSales=filteredSales.reduce((a,c)=>a+c.amount,0);
-  const totalExpenses=filteredExpenses.reduce((a,c)=>a+c.amount,0);
-  const netProfit=totalSales-totalExpenses;
-  document.getElementById('salesSummaryHeader').innerText='₦'+totalSales.toFixed(2);
-  document.getElementById('expensesSummaryHeader').innerText='₦'+totalExpenses.toFixed(2);
-  const netDisplay=document.getElementById('netToday'); netDisplay.innerText='₦'+netProfit.toFixed(2); netDisplay.className=netProfit>=0?'text-white':'text-danger';
+  var selectedDate = document.getElementById('filterDate').value;
+  if(!selectedDate){ selectedDate = todayStr; document.getElementById('filterDate').value = todayStr; }
+  var filteredSales = sales.filter(function(s){ return s.date === selectedDate; });
+  var filteredExpenses = expenses.filter(function(e){ return e.date === selectedDate; });
+  var activityFeed = document.getElementById('recentActivityList');
+  var feedHtml = '';
+  for(var i=0;i<filteredSales.length;i++){
+    var s = filteredSales[i];
+    feedHtml += '<div class="card-custom py-2 px-3 mb-2 d-flex justify-content-between align-items-center"><div style="font-size:12px"><span class="badge bg-success mb-1">Sale: ' + s.serviceType + '</span></div><div class="text-end"><span class="text-success fw-bold" style="font-size:13px">+₦' + Number(s.amount).toFixed(2) + '</span><br><button class="btn btn-link text-warning p-0 me-2" style="font-size:10px" onclick="editSale(\'' + s.id + '\')">Edit</button><button class="btn btn-link text-danger p-0" style="font-size:10px" onclick="deleteItem(\'' + s.id + '\',\'sale\')">Remove</button></div></div>';
+  }
+  for(var j=0;j<filteredExpenses.length;j++){
+    var e2 = filteredExpenses[j];
+    feedHtml += '<div class="card-custom py-2 px-3 mb-2 d-flex justify-content-between align-items-center"><div style="font-size:12px"><span class="badge bg-danger mb-1">Expense</span><br><strong>' + (e2.description || 'Expense') + '</strong></div><div class="text-end"><span class="text-danger fw-bold" style="font-size:13px">-₦' + Number(e2.amount).toFixed(2) + '</span><br><button class="btn btn-link text-warning p-0 me-2" style="font-size:10px" onclick="editExpense(\'' + e2.id + '\')">Edit</button><button class="btn btn-link text-danger p-0" style="font-size:10px" onclick="deleteItem(\'' + e2.id + '\',\'expense\')">Remove</button></div></div>';
+  }
+  if(feedHtml === ''){ activityFeed.innerHTML = '<div class="text-center text-muted py-4" style="font-size:13px">No activities recorded for this date yet.</div>'; } else { activityFeed.innerHTML = feedHtml; }
+  var totalSales = 0; for(var a=0;a<filteredSales.length;a++){ totalSales += Number(filteredSales[a].amount)||0; }
+  var totalExpenses = 0; for(var b=0;b<filteredExpenses.length;b++){ totalExpenses += Number(filteredExpenses[b].amount)||0; }
+  var netProfit = totalSales - totalExpenses;
+  document.getElementById('salesSummaryHeader').innerText = '₦' + totalSales.toFixed(2);
+  document.getElementById('expensesSummaryHeader').innerText = '₦' + totalExpenses.toFixed(2);
+  var netDisplay = document.getElementById('netToday');
+  netDisplay.innerText = '₦' + netProfit.toFixed(2);
+  netDisplay.className = netProfit >= 0 ? 'text-white' : 'text-danger';
 }
 renderApp();
 </script>
