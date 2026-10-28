@@ -18,7 +18,6 @@ body{background-color:#0b1329;color:#fff;font-family:-apple-system,BlinkMacSyste
 .section-title{font-size:1rem;font-weight:600;margin-bottom:12px;color:#e2e8f0}
 .services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
 .service-item{background-color:#172240;border-radius:12px;padding:12px 5px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.03)}
-.service-item:hover{background-color:#1f2e55}
 .service-item i{font-size:20px;margin-bottom:6px;color:#60a5fa}
 .service-item span{font-size:11px;display:block;color:#cbd5e1}
 .card-custom{background-color:#172240;border-radius:12px;padding:15px;margin-bottom:15px;border:1px solid rgba(255,255,255,0.03)}
@@ -26,10 +25,14 @@ body{background-color:#0b1329;color:#fff;font-family:-apple-system,BlinkMacSyste
 .nav-item{text-align:center;color:#94a3b8;text-decoration:none;font-size:11px;cursor:pointer;background:none;border:none}
 .nav-item.active{color:#facc15}
 .nav-item i{font-size:18px;display:block;margin-bottom:2px}
-.form-control,.form-select{background-color:#101a35;color:#fff;border:1px solid rgba(255,255,255,0.1);font-size:13px}
+.form-control,.form-select{background-color:#101a35;color:#fff;border:1px solid rgba(255,255,255,0.1);font-size:14px;padding:10px 12px}
+.form-control::placeholder{color:#94a3b8;opacity:1}
 .form-control:focus,.form-select:focus{background-color:#101a35;color:#fff;border-color:#3b82f6;box-shadow:none}
 .tab-content{display:none}.tab-content.active{display:block}
 #syncStatus{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(34,197,94,0.2);color:#4ade80}
+/* FIXED LABELS - BIG WHITE, CLEAR CLUE */
+.field-label{display:block;color:#ffffff!important;font-size:14px!important;font-weight:700!important;margin-bottom:6px;margin-top:4px}
+.field-hint{color:#facc15;font-size:12px;font-weight:400}
 </style>
 </head>
 <body>
@@ -57,26 +60,39 @@ body{background-color:#0b1329;color:#fff;font-family:-apple-system,BlinkMacSyste
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div class="section-title" style="margin-bottom:0">Daily Activity Log</div><input type="date" id="filterDate" class="form-control form-control-sm w-auto" onchange="renderApp()"></div>
 <div id="recentActivityList"><div class="text-center text-muted py-4" style="font-size:13px">Connecting to Firebase...</div></div>
 </div>
+
 <div id="tab-sales" class="tab-content">
 <div class="section-title" id="saleFormTitle">Record Service Sale</div>
-<div class="card-custom"><form id="saleForm" onsubmit="handleSaleSubmit(event)"><input type="hidden" id="editSaleId"><div class="mb-2"><label class="form-label text-muted" style="font-size:12px">Date</label><input type="date" class="form-control" id="saleDate" required></div><div class="mb-2"><label class="form-label text-muted" style="font-size:12px">Service Type</label><select class="form-select" id="saleService" required><option value="Cassava Grating">Cassava Grating (Grater)</option><option value="Palm Kernel Crushing">Palm Kernel Crushing (Crusher)</option></select></div><div class="mb-3"><label class="form-label text-muted" style="font-size:12px">Amount Paid (₦)</label><input type="number" step="0.01" class="form-control" id="saleAmount" required placeholder="0.00"></div><button type="submit" class="btn btn-success w-100 btn-sm py-2" id="saleSubmitBtn">Save Sale Record</button><button type="button" class="btn btn-secondary w-100 btn-sm py-2 mt-2 d-none" id="cancelSaleEditBtn" onclick="resetSaleForm()">Cancel Edit</button></form></div>
+<div class="card-custom"><form id="saleForm" onsubmit="handleSaleSubmit(event)"><input type="hidden" id="editSaleId">
+<label class="field-label">📅 DATE <span class="field-hint">- When did you do this work?</span></label>
+<input type="date" class="form-control mb-3" id="saleDate" required>
+<label class="field-label">🌾 SERVICE TYPE <span class="field-hint">- What did you mill?</span></label>
+<select class="form-select mb-3" id="saleService" required><option value="Cassava Grating">Cassava Grating (Grater)</option><option value="Palm Kernel Crushing">Palm Kernel Crushing (Crusher)</option></select>
+<label class="field-label">💰 AMOUNT PAID (₦) <span class="field-hint">- How much did customer pay?</span></label>
+<input type="number" step="0.01" class="form-control mb-3" id="saleAmount" required placeholder="e.g. 5000">
+<button type="submit" class="btn btn-success w-100 btn-sm py-2" id="saleSubmitBtn">Save Sale Record</button><button type="button" class="btn btn-secondary w-100 btn-sm py-2 mt-2 d-none" id="cancelSaleEditBtn" onclick="resetSaleForm()">Cancel Edit</button></form></div>
 </div>
+
 <div id="tab-expenses" class="tab-content">
 <div class="section-title" id="expFormTitle">Record Expense (Diesel & Maintenance)</div>
 <div class="card-custom">
 <form id="expenseForm" onsubmit="handleExpenseSubmit(event)">
 <input type="hidden" id="editExpId">
-<div class="mb-2"><label class="form-label text-muted" style="font-size:12px">Date</label><input type="date" class="form-control" id="expDate" required></div>
-<div class="mb-2"><label class="form-label text-muted" style="font-size:12px">Description / Litres Note</label><input type="text" class="form-control" id="expDesc" placeholder="e.g., 10 Litres diesel or oil service"></div>
-<div class="mb-3"><label class="form-label text-muted" style="font-size:12px">Cost (₦)</label><input type="number" step="0.01" class="form-control" id="expAmount" required placeholder="0.00"></div>
+<label class="field-label">📅 DATE <span class="field-hint">- When did you spend?</span></label>
+<input type="date" class="form-control mb-3" id="expDate" required>
+<label class="field-label">📝 DESCRIPTION <span class="field-hint">- What did you buy / spend on?</span></label>
+<input type="text" class="form-control mb-3" id="expDesc" placeholder="e.g. Diesel 10 litres, Repair grater belt">
+<label class="field-label">💰 AMOUNT (₦) <span class="field-hint">- How much did it cost?</span></label>
+<input type="number" step="0.01" class="form-control mb-3" id="expAmount" required placeholder="e.g. 15000">
 <button type="submit" class="btn btn-danger w-100 btn-sm py-2" id="expSubmitBtn">Save Expense Record</button>
 <button type="button" class="btn btn-secondary w-100 btn-sm py-2 mt-2 d-none" id="cancelExpEditBtn" onclick="resetExpForm()">Cancel Edit</button>
 </form>
 </div>
 </div>
+
 <div id="tab-reports" class="tab-content">
 <div class="section-title">Performance Reports & Graphs</div>
-<div class="card-custom mb-3"><div class="mb-2"><label class="form-label text-muted" style="font-size:12px">Report Filter Type</label><select class="form-select" id="reportType" onchange="toggleReportInputs()"><option value="monthly">Monthly Summary</option><option value="range">Custom Date Range</option></select></div><div class="mb-2" id="monthlyInputGroup"><label class="form-label text-muted" style="font-size:12px">Select Month</label><input type="month" class="form-control" id="reportMonth" onchange="generateReport()"></div><div class="row g-2 d-none" id="rangeInputGroup"><div class="col-6"><label class="form-label text-muted" style="font-size:12px">Start Date</label><input type="date" class="form-control" id="reportStartDate" onchange="generateReport()"></div><div class="col-6"><label class="form-label text-muted" style="font-size:12px">End Date</label><input type="date" class="form-control" id="reportEndDate" onchange="generateReport()"></div></div></div>
+<div class="card-custom mb-3"><div class="mb-2"><label class="field-label">Report Filter Type</label><select class="form-select" id="reportType" onchange="toggleReportInputs()"><option value="monthly">Monthly Summary</option><option value="range">Custom Date Range</option></select></div><div class="mb-2" id="monthlyInputGroup"><label class="field-label">Select Month</label><input type="month" class="form-control" id="reportMonth" onchange="generateReport()"></div><div class="row g-2 d-none" id="rangeInputGroup"><div class="col-6"><label class="field-label">Start Date</label><input type="date" class="form-control" id="reportStartDate" onchange="generateReport()"></div><div class="col-6"><label class="field-label">End Date</label><input type="date" class="form-control" id="reportEndDate" onchange="generateReport()"></div></div></div>
 <div class="card-custom text-center py-3"><div style="font-size:12px;color:#94a3b8" id="reportPeriodLabel">Selected Period Summary</div><div style="font-size:22px;font-weight:700;margin:8px 0" id="reportNetProfit">₦0.00</div><div class="d-flex justify-content-around mt-2 pt-2 border-top border-secondary" style="font-size:12px"><div>Income (Sales): <br><strong class="text-success" id="reportTotalSales">₦0.00</strong></div><div>Expenses: <br><strong class="text-danger" id="reportTotalExpenses">₦0.00</strong></div></div></div>
 <div class="card-custom"><div class="section-title" style="font-size:13px;margin-bottom:10px">📊 Graphical Income vs Expenses</div><div style="position:relative;height:220px;width:100%"><canvas id="performanceChart"></canvas></div></div>
 </div>
@@ -198,7 +214,7 @@ function renderChart(income,expensesTotal,netProfit){
   if(performanceChart) performanceChart.destroy();
   performanceChart=new Chart(ctx,{
     type:'bar',
-    data:{labels:['Income (Sales)','Expenses','Net Profit'],datasets:[{label:'Amount in ₦',data:[income,expensesTotal,netProfit],backgroundColor:['rgba(34,197,94,0.7)','rgba(239,68,68,0.7)','rgba(59,130,246,0.7)'],borderColor:['rgb(34,197,94)','rgb(239,68,68)','rgb(59,130,246)'],borderWidth:1,borderRadius:6}]},
+    data:{labels:['Income (Sales)','Expenses','Net Profit'],datasets:[{label:'Amount in ₦',data:[income,[STRIPPED]
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#94a3b8',font:{size:11}}},x:{grid:{display:false},ticks:{color:'#cbd5e1',font:{size:11}}}}}
   });
 }
