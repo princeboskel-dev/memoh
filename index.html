@@ -1,106 +1,161 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MEMOH AGRO MILL - Operations Dashboard</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<title>MEMOH AGRO MILL - Operations Hub</title>
 <style>
-body{background-color:#0b1329;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding-bottom:70px}
-.app-container{max-width:480px;margin:auto;min-height:100vh;background-color:#0b1329;padding:15px}
-.header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.profile-pic{width:52px;height:52px;border-radius:12px;object-fit:cover;border:2px solid #facc15;background-color:#fff;padding:2px}
-.account-card{background:linear-gradient(135deg,#172240 0%,#101a35 100%);border-radius:16px;padding:20px;margin-bottom:20px;box-shadow:0 4px 15px rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.05)}
-.section-title{font-size:1rem;font-weight:600;margin-bottom:12px;color:#e2e8f0}
-.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
-.service-item{background-color:#172240;border-radius:12px;padding:12px 5px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.03)}
-.service-item i{font-size:20px;margin-bottom:6px;color:#60a5fa}
-.service-item span{font-size:11px;display:block;color:#cbd5e1}
-.card-custom{background-color:#172240;border-radius:12px;padding:15px;margin-bottom:15px;border:1px solid rgba(255,255,255,0.03)}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background-color:#101a35;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-around;padding:10px 0;z-index:1000}
-.nav-item{text-align:center;color:#94a3b8;text-decoration:none;font-size:11px;cursor:pointer;background:none;border:none}
-.nav-item.active{color:#facc15}
-.nav-item i{font-size:18px;display:block;margin-bottom:2px}
-.form-control,.form-select{background-color:#c9cdd6!important;color:#000000!important;border:1px solid #9aa0ad!important;font-size:15px!important;font-weight:600!important;padding:12px 12px!important;border-radius:10px!important}
-.form-control::placeholder{color:#555b66!important;opacity:1;font-weight:500}
-.form-control:focus,.form-select:focus{background-color:#d9dde4!important;color:#000!important;border-color:#facc15!important;box-shadow:0 0 0 2px rgba(250,204,21,0.3)!important}
-.tab-content{display:none}.tab-content.active{display:block}
-#syncStatus{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(34,197,94,0.2);color:#4ade80}
-.field-label{display:block;color:#ffffff!important;font-size:14px!important;font-weight:700!important;margin-bottom:6px;margin-top:4px}
-.field-hint{color:#facc15;font-size:12px;font-weight:400}
+*{box-sizing:border-box}body{background:#0f172a;color:white;font-family:Arial;margin:0;padding-bottom:80px}
+.top{background:#1e293b;padding:15px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10}
+.logo{width:50px;height:50px;background:#f59e0b;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px}
+.live{font-size:11px;background:#14532d;color:#4ade80;padding:3px 8px;border-radius:20px}
+.card{background:#1e293b;margin:12px;padding:16px;border-radius:14px}
+.big{font-size:28px;font-weight:bold;margin:8px 0}
+.green{color:#22c55e}.red{color:#ef4444}.yellow{color:#eab308}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.action{background:#1e293b;border:none;color:white;padding:14px 5px;border-radius:12px;cursor:pointer;font-size:13px}
+.action div{font-size:22px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mini{background:#0f172a;padding:10px;border-radius:10px;font-size:13px}
+input,select{width:100%;padding:12px;margin:7px 0;border-radius:8px;border:none;font-size:15px}
+button{padding:12px;border:none;border-radius:8px;font-weight:bold;cursor:pointer}
+.btn-yellow{background:#f59e0b;width:100%}.btn-red{background:#ef4444;color:white}.btn-green{background:#22c55e}.btn-grey{background:#475569;color:white}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:#1e293b;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:10px 0;text-align:center;font-size:12px;z-index:20}
+.bottom div{cursor:pointer;color:#94a3b8}.bottom .active{color:#f59e0b}
+.hidden{display:none!important}
+.usercard{background:#0f172a;padding:12px;border-radius:10px;margin:8px 0;display:flex;justify-content:space-between;align-items:center}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:8px;border-bottom:1px solid #334155;text-align:left}
+#loginPage{min-height:100vh;display:flex;justify-content:center;align-items:center;padding:15px}
+.loginbox{background:#1e293b;padding:25px;border-radius:14px;width:100%;max-width:380px;text-align:center}
 </style>
 </head>
 <body>
-<div class="app-container">
-<div class="header-top">
-<div style="display:flex;align-items:center;gap:10px">
-<img src="logo.jpg" alt="MEMOH AGRO MILL Logo" class="profile-pic">
-<div><div style="font-size:11px;color:#94a3b8">MEMOH AGRO MILL</div><div style="font-size:14px;font-weight:600">Operations Hub <span id="syncStatus">● LIVE - Firebase</span></div></div>
-</div>
-<div style="display:flex;gap:15px;font-size:18px;color:#cbd5e1"><i class="fa-solid fa-headset" onclick="alert('Support: Contact mill management.')" style="cursor:pointer"></i><i class="fa-solid fa-bell" onclick="alert('No new notifications.')" style="cursor:pointer"></i></div>
-</div>
-<div class="account-card">
-<div style="font-size:12px;color:#94a3b8;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center"><span>Today's Net Balance (Sales - Expenses)</span><span id="currentDateDisplay" style="font-size:10px;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px"></span></div>
-<div style="font-size:26px;font-weight:700;margin-bottom:12px" id="netToday">₦0.00</div>
-<div style="display:flex;justify-content:space-between;font-size:12px;border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><div>Sales: <strong class="text-success" id="salesSummaryHeader">₦0.00</strong></div><div>Expenses: <strong class="text-danger" id="expensesSummaryHeader">₦0.00</strong></div></div>
-</div>
-<div id="tab-home" class="tab-content active">
-<div class="section-title">Quick Actions</div>
-<div class="services-grid">
-<div class="service-item" onclick="switchTab('sales')"><i class="fa-solid fa-wheat-awn text-success"></i><span>Add Sale</span></div>
-<div class="service-item" onclick="switchTab('expenses')"><i class="fa-solid fa-gas-pump text-danger"></i><span>Add Expense</span></div>
-<div class="service-item" onclick="switchTab('reports')"><i class="fa-solid fa-chart-pie text-warning"></i><span>Reports & Graphs</span></div>
-</div>
-<div class="card-custom"><div class="section-title" style="font-size:13px;margin-bottom:8px"><i class="fa-solid fa-microchip text-info"></i> Equipment Status</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;color:#cbd5e1"><div style="background:rgba(255,255,255,0.03);padding:8px;border-radius:8px">⚙️ Grater: <span class="text-success">Ready</span></div><div style="background:rgba(255,255,255,0.03);padding:8px;border-radius:8px">⚙️ Crusher: <span class="text-success">Ready</span></div><div style="background:rgba(255,255,255,0.03);padding:8px;border-radius:8px">⚡ Water-Cool Gen: <span class="text-warning">Standby</span></div><div style="background:rgba(255,255,255,0.03);padding:8px;border-radius:8px">⚡ 195 Gen: <span class="text-warning">Standby</span></div></div></div>
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div class="section-title" style="margin-bottom:0">Daily Activity Log</div><input type="date" id="filterDate" class="form-control form-control-sm w-auto" onchange="renderApp()"></div>
-<div id="recentActivityList"><div class="text-center text-muted py-4" style="font-size:13px">Connecting to Firebase...</div></div>
-</div>
-<div id="tab-sales" class="tab-content">
-<div class="section-title" id="saleFormTitle">Record Service Sale</div>
-<div class="card-custom"><form id="saleForm" onsubmit="handleSaleSubmit(event)"><input type="hidden" id="editSaleId">
-<label class="field-label">📅 DATE <span class="field-hint">- When did you do this work?</span></label>
-<input type="date" class="form-control mb-3" id="saleDate" required>
-<label class="field-label">🌾 SERVICE TYPE <span class="field-hint">- What did you mill?</span></label>
-<select class="form-select mb-3" id="saleService" required><option value="Cassava Grating">Cassava Grating (Grater)</option><option value="Palm Kernel Crushing">Palm Kernel Crushing (Crusher)</option></select>
-<label class="field-label">💰 AMOUNT PAID (₦) <span class="field-hint">- How much did customer pay?</span></label>
-<input type="number" step="0.01" class="form-control mb-3" id="saleAmount" required placeholder="e.g. 5000">
-<button type="submit" class="btn btn-success w-100 btn-sm py-2" id="saleSubmitBtn">Save Sale Record</button><button type="button" class="btn btn-secondary w-100 btn-sm py-2 mt-2 d-none" id="cancelSaleEditBtn" onclick="resetSaleForm()">Cancel Edit</button></form></div>
-</div>
-<div id="tab-expenses" class="tab-content">
-<div class="section-title" id="expFormTitle">Record Expense (Diesel & Maintenance)</div>
-<div class="card-custom">
-<form id="expenseForm" onsubmit="handleExpenseSubmit(event)">
-<input type="hidden" id="editExpId">
-<label class="field-label">📅 DATE <span class="field-hint">- When did you spend?</span></label>
-<input type="date" class="form-control mb-3" id="expDate" required>
-<label class="field-label">📝 DESCRIPTION <span class="field-hint">- What did you buy / spend on?</span></label>
-<input type="text" class="form-control mb-3" id="expDesc" placeholder="e.g. Diesel 10 litres, Repair grater belt">
-<label class="field-label">💰 AMOUNT (₦) <span class="field-hint">- How much did it cost?</span></label>
-<input type="number" step="0.01" class="form-control mb-3" id="expAmount" required placeholder="e.g. 15000">
-<button type="submit" class="btn btn-danger w-100 btn-sm py-2" id="expSubmitBtn">Save Expense Record</button>
-<button type="button" class="btn btn-secondary w-100 btn-sm py-2 mt-2 d-none" id="cancelExpEditBtn" onclick="resetExpForm()">Cancel Edit</button>
-</form>
+
+<!-- ========== LOGIN PAGE ========== -->
+<div id="loginPage">
+<div class="loginbox">
+<div style="font-size:45px">🌾</div>
+<h2 style="margin:5px 0">MEMOH AGRO MILL</h2>
+<p style="color:#94a3b8;margin:0">Operations Hub - Login</p>
+<input id="loginEmail" placeholder="Email e.g. imoh@memoh.com">
+<input id="loginPass" type="password" placeholder="Password">
+<button class="btn-yellow" onclick="doLogin()">🔓 Login</button>
+<p id="loginMsg" style="color:#f87171;min-height:20px"></p>
+<p style="font-size:12px;color:#94a3b8">Only Admin can create users.<br>Contact Admin if you don't have login.</p>
 </div>
 </div>
-<div id="tab-reports" class="tab-content">
-<div class="section-title">Performance Reports & Graphs</div>
-<div class="card-custom mb-3"><div class="mb-2"><label class="field-label">Report Filter Type</label><select class="form-select" id="reportType" onchange="toggleReportInputs()"><option value="monthly">Monthly Summary</option><option value="range">Custom Date Range</option></select></div><div class="mb-2" id="monthlyInputGroup"><label class="field-label">Select Month</label><input type="month" class="form-control" id="reportMonth" onchange="generateReport()"></div><div class="row g-2 d-none" id="rangeInputGroup"><div class="col-6"><label class="field-label">Start Date</label><input type="date" class="form-control" id="reportStartDate" onchange="generateReport()"></div><div class="col-6"><label class="field-label">End Date</label><input type="date" class="form-control" id="reportEndDate" onchange="generateReport()"></div></div></div>
-<div class="card-custom text-center py-3"><div style="font-size:12px;color:#94a3b8" id="reportPeriodLabel">Selected Period Summary</div><div style="font-size:22px;font-weight:700;margin:8px 0" id="reportNetProfit">₦0.00</div><div class="d-flex justify-content-around mt-2 pt-2 border-top border-secondary" style="font-size:12px"><div>Income (Sales): <br><strong class="text-success" id="reportTotalSales">₦0.00</strong></div><div>Expenses: <br><strong class="text-danger" id="reportTotalExpenses">₦0.00</strong></div></div></div>
-<div class="card-custom"><div class="section-title" style="font-size:13px;margin-bottom:10px">📊 Graphical Income vs Expenses</div><div style="position:relative;height:220px;width:100%"><canvas id="performanceChart"></canvas></div></div>
+
+<!-- ========== MAIN APP ========== -->
+<div id="mainApp" class="hidden">
+
+<div class="top">
+<div class="logo">🌾</div>
+<div style="flex:1"><b>MEMOH AGRO MILL</b><br><small>Operations Hub</small> <span class="live">● LIVE - Firebase</span></div>
+<div style="text-align:right"><small id="helloName">Hi</small><br><small id="helloRole" style="color:#f59e0b"></small><br><button class="btn-grey" style="padding:6px 10px;margin-top:4px" onclick="doLogout()">Logout</button></div>
+</div>
+
+<!-- HOME VIEW -->
+<div id="viewHome">
+<div class="card">
+<div style="display:flex;justify-content:space-between"><span style="color:#94a3b8">Today's Net Balance (Sales - Expenses)</span><span id="todayLabel" style="background:#334155;padding:3px 8px;border-radius:6px;font-size:12px"></span></div>
+<div class="big" id="netBalance">₦0.00</div>
+<div style="display:flex;justify-content:space-between"><span>Sales: <b class="green" id="todaySales">₦0.00</b></span><span>Expenses: <b class="red" id="todayExpenses">₦0.00</b></span></div>
+</div>
+
+<h3 style="padding:0 12px">Quick Actions</h3>
+<div class="grid3" style="padding:0 12px">
+<button class="action" onclick="showView('viewSale')"><div>🌿</div>Add Sale</button>
+<button class="action" onclick="showView('viewExpense')"><div>⛽</div>Add Expense</button>
+<button class="action" id="reportsBtn" onclick="showView('viewReports')"><div>📊</div>Reports & Graphs</button>
+</div>
+
+<div class="card">
+<b>⚙️ Equipment Status</b>
+<div class="grid2" style="margin-top:10px">
+<div class="mini">⚙️ Grater: <span class="green" id="eqGrater">Ready</span></div>
+<div class="mini">⚙️ Crusher: <span class="green" id="eqCrusher">Ready</span></div>
+<div class="mini">⚡ Water-Cool Gen: <span class="yellow" id="eqGen1">Standby</span></div>
+<div class="mini">⚡ 195 Gen: <span class="yellow" id="eqGen2">Standby</span></div>
+</div>
+<select id="eqSelect" onchange="updateEq()"><option value="Grater">Grater</option><option value="Crusher">Crusher</option><option value="Water-Cool Gen">Water-Cool Gen</option><option value="195 Gen">195 Gen</option></select>
+<select id="eqStatus"><option>Ready</option><option>Standby</option><option>Fault</option><option>Maintenance</option></select>
+<button class="btn-yellow" onclick="saveEq()">Update Equipment</button>
+</div>
+
+<div style="display:flex;justify-content:space-between;align-items:center;padding:0 12px"><h3>Daily Activity Log</h3><input type="date" id="logDate" style="width:auto" onchange="loadData()"></div>
+<div class="card" id="activityLog">Loading...</div>
+
+<div id="adminHomeBtn" class="hidden" style="padding:0 12px"><button class="btn-yellow" onclick="showView('viewUsers')">👥 Manage Users</button></div>
+</div>
+
+<!-- ADD SALE -->
+<div id="viewSale" class="hidden">
+<div class="card"><h3>🌿 Add Sale</h3>
+<input type="date" id="saleDate">
+<select id="saleItem"><option>Garri - White</option><option>Garri - Yellow</option><option>Cassava - Tuber</option><option>Fufu</option><option>Starch</option><option>Other</option></select>
+<input id="saleQty" type="number" placeholder="Quantity (bags / kg)">
+<input id="salePrice" type="number" placeholder="Amount ₦">
+<input id="saleCustomer" placeholder="Customer Name (optional)">
+<input id="saleNote" placeholder="Note (optional)">
+<button class="btn-yellow" onclick="addSale()">Save Sale</button>
+<p id="saleMsg"></p></div>
+</div>
+
+<!-- ADD EXPENSE -->
+<div id="viewExpense" class="hidden">
+<div class="card"><h3>⛽ Add Expense</h3>
+<input type="date" id="expDate">
+<select id="expItem"><option>Fuel - Diesel</option><option>Fuel - Petrol</option><option>Transport</option><option>Labour</option><option>Maintenance</option><option>Cassava Purchase</option><option>Firewood</option><option>Other</option></select>
+<input id="expAmount" type="number" placeholder="Amount ₦">
+<input id="expNote" placeholder="Note (optional)">
+<button class="btn-yellow" onclick="addExpense()">Save Expense</button>
+<p id="expMsg"></p></div>
+</div>
+
+<!-- REPORTS -->
+<div id="viewReports" class="hidden">
+<div class="card"><h3>📊 Reports & Graphs</h3>
+<label>From</label><input type="date" id="repFrom"><label>To</label><input type="date" id="repTo">
+<button class="btn-yellow" onclick="loadReports()">Load Report</button>
+<div id="repResult" style="margin-top:12px"></div>
+<canvas id="repChart" width="300" height="160" style="width:100%;background:#0f172a;border-radius:10px;margin-top:10px"></canvas>
 </div>
 </div>
-<div class="bottom-nav">
-<button class="nav-item active" onclick="switchTab('home')" id="nav-btn-home"><i class="fa-solid fa-house"></i>Home</button>
-<button class="nav-item" onclick="switchTab('sales')" id="nav-btn-sales"><i class="fa-solid fa-circle-plus"></i>Add Sale</button>
-<button class="nav-item" onclick="switchTab('expenses')" id="nav-btn-expenses"><i class="fa-solid fa-gas-pump"></i>Expenses</button>
-<button class="nav-item" onclick="switchTab('reports')" id="nav-btn-reports"><i class="fa-solid fa-chart-pie"></i>Reports</button>
+
+<!-- USER MANAGEMENT - ADMIN ONLY -->
+<div id="viewUsers" class="hidden">
+<div class="card"><h3>👥 User Management</h3>
+<p style="font-size:13px;color:#94a3b8">Only Admin sees this page.</p>
+<input id="newName" placeholder="Full Name e.g. John Doe">
+<input id="newEmail" placeholder="Email e.g. john@memoh.com">
+<input id="newPass" placeholder="Password e.g. 123456">
+<select id="newRole">
+<option value="staff">Staff - Sale / Expense only</option>
+<option value="manager">Manager - Sale / Expense + Reports</option>
+<option value="viewer">Viewer - Reports only</option>
+<option value="admin">Admin - Full Access + Manage Users</option>
+</select>
+<button class="btn-yellow" onclick="createUser()">+ Create User</button>
+<p id="userMsg" style="color:#f87171"></p>
+<div id="userList"></div>
 </div>
-<script>
-var firebaseConfig = {
+</div>
+
+</div>
+
+<div class="bottom" id="bottomNav">
+<div onclick="showView('viewHome')" id="navHome" class="active">🏠<br>Home</div>
+<div onclick="showView('viewSale')">➕<br>Add Sale</div>
+<div onclick="showView('viewExpense')">⛽<br>Expenses</div>
+<div onclick="showView('viewReports')" id="navReports">📊<br>Reports</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
   apiKey: "AIzaSyB-Y0g-Zoq6fRvoEY1wdOYQFRlK7B2mzfA",
   authDomain: "memoh-agro.firebaseapp.com",
   databaseURL: "https://memoh-agro-default-rtdb.firebaseio.com",
@@ -109,181 +164,161 @@ var firebaseConfig = {
   messagingSenderId: "805958131176",
   appId: "1:805958131176:web:281c42b291a88364ebd85d"
 };
-firebase.initializeApp(firebaseConfig);
-var db = firebase.database();
-var salesRef = db.ref('sales');
-var expensesRef = db.ref('expenses');
-var sales = [];
-var expenses = [];
-var performanceChart = null;
-function getToday(){
-  var d = new Date();
-  var y = d.getFullYear();
-  var m = ('0' + (d.getMonth()+1)).slice(-2);
-  var day = ('0' + d.getDate()).slice(-2);
-  return y + '-' + m + '-' + day;
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function fmt(n){ return "₦" + Number(n||0).toLocaleString('en-NG',{minimumFractionDigits:2}); }
+
+// ===== LOGIN =====
+window.doLogin = async function(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value.trim();
+  const msg=document.getElementById('loginMsg');
+  if(!email||!pass){ msg.innerText="Enter email and password"; return; }
+  msg.innerText="Logging in...";
+  try{
+    const cred=await signInWithEmailAndPassword(auth,email,pass);
+    const snap=await getDoc(doc(db,"users",cred.user.uid));
+    if(!snap.exists()){ msg.innerText="No user record. Contact Admin."; return; }
+    const d=snap.data();
+    if(d.active===false){ msg.innerText="Account deactivated. Contact Admin."; return; }
+    localStorage.setItem('memoh_uid',cred.user.uid);
+    localStorage.setItem('memoh_role',d.role);
+    localStorage.setItem('memoh_name',d.name||email);
+    localStorage.setItem('memoh_email',d.email||email);
+    openApp(d);
+  }catch(e){ msg.innerText=e.message.replace("Firebase: ",""); }
 }
-var todayStr = getToday();
-var currentMonthStr = todayStr.slice(0,7);
-document.getElementById('saleDate').value = todayStr;
-document.getElementById('expDate').value = todayStr;
-document.getElementById('filterDate').value = todayStr;
-document.getElementById('currentDateDisplay').innerText = todayStr;
-document.getElementById('reportMonth').value = currentMonthStr;
-document.getElementById('reportStartDate').value = todayStr;
-document.getElementById('reportEndDate').value = todayStr;
-salesRef.on('value', function(snap){
-  var data = snap.val() || {};
-  sales = Object.keys(data).map(function(k){ var o = data[k]; o.id = k; return o; });
-  renderApp();
-});
-expensesRef.on('value', function(snap){
-  var data = snap.val() || {};
-  expenses = Object.keys(data).map(function(k){ var o = data[k]; o.id = k; return o; });
-  renderApp();
-});
-function switchTab(tabName){
-  var tabs = document.querySelectorAll('.tab-content');
-  for(var i=0;i<tabs.length;i++){ tabs[i].classList.remove('active'); }
-  var navs = document.querySelectorAll('.bottom-nav .nav-item');
-  for(var j=0;j<navs.length;j++){ navs[j].classList.remove('active'); }
-  document.getElementById('tab-' + tabName).classList.add('active');
-  document.getElementById('nav-btn-' + tabName).classList.add('active');
-  window.scrollTo(0,0);
-  if(tabName === 'reports'){ generateReport(); }
+window.doLogout = async function(){ await signOut(auth); localStorage.clear(); location.reload(); }
+
+function openApp(userData){
+  document.getElementById('loginPage').classList.add('hidden');
+  document.getElementById('mainApp').classList.remove('hidden');
+  document.getElementById('bottomNav').classList.remove('hidden');
+  const role=localStorage.getItem('memoh_role')||userData.role;
+  document.getElementById('helloName').innerText="Hi, "+(localStorage.getItem('memoh_name')||"User");
+  document.getElementById('helloRole').innerText=role.toUpperCase();
+  if(role==='admin'){ document.getElementById('adminHomeBtn').classList.remove('hidden'); }
+  if(role==='staff'){ document.getElementById('reportsBtn').style.display='none'; document.getElementById('navReports').style.display='none'; }
+  if(role==='viewer'){ document.getElementById('viewSale').innerHTML="<div class='card'>Viewer cannot add sales</div>"; }
+  const t=todayStr();
+  document.getElementById('logDate').value=t; document.getElementById('saleDate').value=t; document.getElementById('expDate').value=t;
+  document.getElementById('todayLabel').innerText=t; document.getElementById('repFrom').value=t; document.getElementById('repTo').value=t;
+  loadData(); loadEq();
 }
-function handleSaleSubmit(e){
-  e.preventDefault();
-  var editId = document.getElementById('editSaleId').value;
-  var date = document.getElementById('saleDate').value;
-  var serviceType = document.getElementById('saleService').value;
-  var amount = parseFloat(document.getElementById('saleAmount').value);
-  if(serviceType && !isNaN(amount)){
-    if(editId){ salesRef.child(editId).update({date:date, serviceType:serviceType, amount:amount}); alert('Sale updated!'); }
-    else { salesRef.push({date:date, serviceType:serviceType, amount:amount}); alert('Sale saved to Firebase!'); }
-    resetSaleForm(); switchTab('home');
-  }
-}
-function editSale(id){
-  var sale = null;
-  for(var i=0;i<sales.length;i++){ if(sales[i].id == id){ sale = sales[i]; } }
-  if(sale){ document.getElementById('editSaleId').value = sale.id; document.getElementById('saleDate').value = sale.date; document.getElementById('saleService').value = sale.serviceType; document.getElementById('saleAmount').value = sale.amount; document.getElementById('saleFormTitle').innerText = 'Edit Service Sale'; document.getElementById('saleSubmitBtn').innerText = 'Update Sale Record'; document.getElementById('cancelSaleEditBtn').classList.remove('d-none'); switchTab('sales'); }
-}
-function resetSaleForm(){ document.getElementById('saleForm').reset(); document.getElementById('editSaleId').value=''; document.getElementById('saleDate').value=todayStr; document.getElementById('saleFormTitle').innerText='Record Service Sale'; document.getElementById('saleSubmitBtn').innerText='Save Sale Record'; document.getElementById('cancelSaleEditBtn').classList.add('d-none'); }
-function handleExpenseSubmit(e){
-  e.preventDefault();
-  var editId = document.getElementById('editExpId').value;
-  var date = document.getElementById('expDate').value;
-  var description = document.getElementById('expDesc').value.trim();
-  var amount = parseFloat(document.getElementById('expAmount').value);
-  if(!isNaN(amount)){
-    if(editId){ expensesRef.child(editId).update({date:date, category:'Expense', equipment:'General', description:description, amount:amount}); alert('Expense updated!'); }
-    else { expensesRef.push({date:date, category:'Expense', equipment:'General', description:description, amount:amount}); alert('Expense saved to Firebase!'); }
-    resetExpForm(); switchTab('home');
-  }
-}
-function editExpense(id){
-  var exp = null;
-  for(var i=0;i<expenses.length;i++){ if(expenses[i].id == id){ exp = expenses[i]; } }
-  if(exp){ document.getElementById('editExpId').value=exp.id; document.getElementById('expDate').value=exp.date; document.getElementById('expDesc').value=exp.description||''; document.getElementById('expAmount').value=exp.amount; document.getElementById('expFormTitle').innerText='Edit Expense Record'; document.getElementById('expSubmitBtn').innerText='Update Expense Record'; document.getElementById('cancelExpEditBtn').classList.remove('d-none'); switchTab('expenses'); }
-}
-function resetExpForm(){ document.getElementById('expenseForm').reset(); document.getElementById('editExpId').value=''; document.getElementById('expDate').value=todayStr; document.getElementById('expFormTitle').innerText='Record Expense (Diesel & Maintenance)'; document.getElementById('expSubmitBtn').innerText='Save Expense Record'; document.getElementById('cancelExpEditBtn').classList.add('d-none'); }
-function deleteItem(id,type){
-  if(confirm('Are you sure you want to delete this entry?')){
-    if(type==='sale'){ salesRef.child(id).remove(); }
-    if(type==='expense'){ expensesRef.child(id).remove(); }
-  }
-}
-function toggleReportInputs(){
-  var type = document.getElementById('reportType').value;
-  if(type==='monthly'){ document.getElementById('monthlyInputGroup').classList.remove('d-none'); document.getElementById('rangeInputGroup').classList.add('d-none'); }
-  else { document.getElementById('monthlyInputGroup').classList.add('d-none'); document.getElementById('rangeInputGroup').classList.remove('d-none'); }
-  generateReport();
-}
-function generateReport(){
-  var type = document.getElementById('reportType').value;
-  var filteredSales = [];
-  var filteredExpenses = [];
-  var periodText = '';
-  if(type==='monthly'){
-    var monthVal = document.getElementById('reportMonth').value;
-    if(!monthVal){ return; }
-    filteredSales = sales.filter(function(s){ return s.date && s.date.indexOf(monthVal) === 0; });
-    filteredExpenses = expenses.filter(function(e){ return e.date && e.date.indexOf(monthVal) === 0; });
-    periodText = 'Monthly Summary: ' + monthVal;
-  } else {
-    var startVal = document.getElementById('reportStartDate').value;
-    var endVal = document.getElementById('reportEndDate').value;
-    if(!startVal || !endVal){ return; }
-    filteredSales = sales.filter(function(s){ return s.date >= startVal && s.date <= endVal; });
-    filteredExpenses = expenses.filter(function(e){ return e.date >= startVal && e.date <= endVal; });
-    periodText = 'Range: ' + startVal + ' to ' + endVal;
-  }
-  document.getElementById('reportPeriodLabel').innerText = periodText;
-  var tSales = 0; for(var i=0;i<filteredSales.length;i++){ tSales += Number(filteredSales[i].amount)||0; }
-  var tExps = 0; for(var j=0;j<filteredExpenses.length;j++){ tExps += Number(filteredExpenses[j].amount)||0; }
-  var net = tSales - tExps;
-  document.getElementById('reportTotalSales').innerText = '₦' + tSales.toFixed(2);
-  document.getElementById('reportTotalExpenses').innerText = '₦' + tExps.toFixed(2);
-  var netElem = document.getElementById('reportNetProfit');
-  netElem.innerText = '₦' + net.toFixed(2);
-  netElem.className = net >= 0 ? 'text-white' : 'text-danger';
-  renderChart(tSales, tExps, net);
-}
-function renderChart(income, expensesTotal, netProfit){
-  var ctx = document.getElementById('performanceChart').getContext('2d');
-  if(performanceChart){ performanceChart.destroy(); }
-  performanceChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: ['Income (Sales)', 'Expenses', 'Net Profit'],
-      datasets: [{
-        label: 'Amount in Naira',
-        data: [income, expensesTotal, netProfit],
-        backgroundColor: ['rgba(34,197,94,0.7)', 'rgba(239,68,68,0.7)', 'rgba(59,130,246,0.7)'],
-        borderColor: ['rgb(34,197,94)', 'rgb(239,68,68)', 'rgb(59,130,246)'],
-        borderWidth: 1,
-        borderRadius: 6
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 11 } } },
-        x: { grid: { display: false }, ticks: { color: '#cbd5e1', font: { size: 11 } } }
-      }
+onAuthStateChanged(auth, async (user)=>{
+  if(user){
+    const snap=await getDoc(doc(db,"users",user.uid));
+    if(snap.exists() && snap.data().active!==false){
+      localStorage.setItem('memoh_role',snap.data().role);
+      localStorage.setItem('memoh_name',snap.data().name||user.email);
+      openApp(snap.data());
     }
-  });
-}
-function renderApp(){
-  var selectedDate = document.getElementById('filterDate').value;
-  if(!selectedDate){ selectedDate = todayStr; document.getElementById('filterDate').value = todayStr; }
-  var filteredSales = sales.filter(function(s){ return s.date === selectedDate; });
-  var filteredExpenses = expenses.filter(function(e){ return e.date === selectedDate; });
-  var activityFeed = document.getElementById('recentActivityList');
-  var feedHtml = '';
-  for(var i=0;i<filteredSales.length;i++){
-    var s = filteredSales[i];
-    feedHtml += '<div class="card-custom py-2 px-3 mb-2 d-flex justify-content-between align-items-center"><div style="font-size:12px"><span class="badge bg-success mb-1">Sale: ' + s.serviceType + '</span></div><div class="text-end"><span class="text-success fw-bold" style="font-size:13px">+₦' + Number(s.amount).toFixed(2) + '</span><br><button class="btn btn-link text-warning p-0 me-2" style="font-size:10px" onclick="editSale(\'' + s.id + '\')">Edit</button><button class="btn btn-link text-danger p-0" style="font-size:10px" onclick="deleteItem(\'' + s.id + '\',\'sale\')">Remove</button></div></div>';
   }
-  for(var j=0;j<filteredExpenses.length;j++){
-    var e2 = filteredExpenses[j];
-    feedHtml += '<div class="card-custom py-2 px-3 mb-2 d-flex justify-content-between align-items-center"><div style="font-size:12px"><span class="badge bg-danger mb-1">Expense</span><br><strong>' + (e2.description || 'Expense') + '</strong></div><div class="text-end"><span class="text-danger fw-bold" style="font-size:13px">-₦' + Number(e2.amount).toFixed(2) + '</span><br><button class="btn btn-link text-warning p-0 me-2" style="font-size:10px" onclick="editExpense(\'' + e2.id + '\')">Edit</button><button class="btn btn-link text-danger p-0" style="font-size:10px" onclick="deleteItem(\'' + e2.id + '\',\'expense\')">Remove</button></div></div>';
-  }
-  if(feedHtml === ''){ activityFeed.innerHTML = '<div class="text-center text-muted py-4" style="font-size:13px">No activities recorded for this date yet.</div>'; } else { activityFeed.innerHTML = feedHtml; }
-  var totalSales = 0; for(var a=0;a<filteredSales.length;a++){ totalSales += Number(filteredSales[a].amount)||0; }
-  var totalExpenses = 0; for(var b=0;b<filteredExpenses.length;b++){ totalExpenses += Number(filteredExpenses[b].amount)||0; }
-  var netProfit = totalSales - totalExpenses;
-  document.getElementById('salesSummaryHeader').innerText = '₦' + totalSales.toFixed(2);
-  document.getElementById('expensesSummaryHeader').innerText = '₦' + totalExpenses.toFixed(2);
-  var netDisplay = document.getElementById('netToday');
-  netDisplay.innerText = '₦' + netProfit.toFixed(2);
-  netDisplay.className = netProfit >= 0 ? 'text-white' : 'text-danger';
+});
+
+// ===== NAV =====
+window.showView = function(id){
+  ['viewHome','viewSale','viewExpense','viewReports','viewUsers'].forEach(v=>document.getElementById(v).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  document.getElementById('navHome').classList.toggle('active', id==='viewHome');
+  window.scrollTo(0,0);
+  if(id==='viewUsers') loadUsers();
+  if(id==='viewReports') loadReports();
 }
-renderApp();
+
+// ===== SALES / EXPENSES =====
+window.addSale = async function(){
+  const date=document.getElementById('saleDate').value||todayStr();
+  const item=document.getElementById('saleItem').value;
+  const qty=Number(document.getElementById('saleQty').value||0);
+  const amount=Number(document.getElementById('salePrice').value||0);
+  const customer=document.getElementById('saleCustomer').value;
+  if(!amount){ document.getElementById('saleMsg').innerText="Enter amount"; return; }
+  await addDoc(collection(db,"sales"),{date,item,qty,amount,customer,note:document.getElementById('saleNote').value,by:localStorage.getItem('memoh_name'),createdAt:new Date().toISOString()});
+  document.getElementById('saleMsg').style.color="#22c55e"; document.getElementById('saleMsg').innerText="Sale saved ✅";
+  document.getElementById('saleQty').value=""; document.getElementById('salePrice').value="";
+  loadData(); setTimeout(()=>showView('viewHome'),600);
+}
+window.addExpense = async function(){
+  const date=document.getElementById('expDate').value||todayStr();
+  const item=document.getElementById('expItem').value;
+  const amount=Number(document.getElementById('expAmount').value||0);
+  if(!amount){ document.getElementById('expMsg').innerText="Enter amount"; return; }
+  await addDoc(collection(db,"expenses"),{date,item,amount,note:document.getElementById('expNote').value,by:localStorage.getItem('memoh_name'),createdAt:new Date().toISOString()});
+  document.getElementById('expMsg').style.color="#22c55e"; document.getElementById('expMsg').innerText="Expense saved ✅";
+  document.getElementById('expAmount').value="";
+  loadData(); setTimeout(()=>showView('viewHome'),600);
+}
+async function loadData(){
+  const date=document.getElementById('logDate').value||todayStr();
+  const sSnap=await getDocs(query(collection(db,"sales"),where("date","==",date)));
+  const eSnap=await getDocs(query(collection(db,"expenses"),where("date","==",date)));
+  let sTotal=0, eTotal=0, html="<table><tr><th>Type</th><th>Item</th><th>Amount</th><th>By</th></tr>";
+  sSnap.forEach(d=>{ const x=d.data(); sTotal+=Number(x.amount||0); html+=`<tr><td>🟢 Sale</td><td>${x.item} ${x.qty? "("+x.qty+")":""}</td><td>${fmt(x.amount)}</td><td>${x.by||""}</td></tr>`; });
+  eSnap.forEach(d=>{ const x=d.data(); eTotal+=Number(x.amount||0); html+=`<tr><td>🔴 Expense</td><td>${x.item}</td><td>${fmt(x.amount)}</td><td>${x.by||""}</td></tr>`; });
+  html+="</table>"; if(sTotal===0 && eTotal===0) html="No activity for this date yet.";
+  document.getElementById('activityLog').innerHTML=html;
+  document.getElementById('todaySales').innerText=fmt(sTotal);
+  document.getElementById('todayExpenses').innerText=fmt(eTotal);
+  document.getElementById('netBalance').innerText=fmt(sTotal-eTotal);
+}
+window.loadData=loadData;
+
+// ===== REPORTS =====
+window.loadReports = async function(){
+  const from=document.getElementById('repFrom').value||todayStr();
+  const to=document.getElementById('repTo').value||todayStr();
+  const sSnap=await getDocs(collection(db,"sales"));
+  const eSnap=await getDocs(collection(db,"expenses"));
+  let s=0,e=0;
+  sSnap.forEach(d=>{ const x=d.data(); if(x.date>=from && x.date<=to) s+=Number(x.amount||0); });
+  eSnap.forEach(d=>{ const x=d.data(); if(x.date>=from && x.date<=to) e+=Number(x.amount||0); });
+  document.getElementById('repResult').innerHTML=`<b>Period:</b> ${from} to ${to}<br><b>Total Sales:</b> <span style="color:#22c55e">${fmt(s)}</span><br><b>Total Expenses:</b> <span style="color:#ef4444">${fmt(e)}</span><br><b>Net:</b> <b>${fmt(s-e)}</b>`;
+  const c=document.getElementById('repChart'); const ctx=c.getContext('2d'); ctx.clearRect(0,0,300,160); ctx.fillStyle="#22c55e"; ctx.fillRect(40,160-Math.min(120,s/1000),60,Math.min(120,s/1000)); ctx.fillStyle="#ef4444"; ctx.fillRect(160,160-Math.min(120,e/1000),60,Math.min(120,e/1000)); ctx.fillStyle="white"; ctx.fillText("Sales",45,155); ctx.fillText("Expenses",160,155);
+}
+
+// ===== EQUIPMENT =====
+window.saveEq = async function(){
+  const name=document.getElementById('eqSelect').value; const status=document.getElementById('eqStatus').value;
+  await setDoc(doc(db,"equipment",name),{status,updated:new Date().toISOString()});
+  loadEq(); alert(name+" set to "+status);
+}
+async function loadEq(){
+  const snap=await getDocs(collection(db,"equipment"));
+  snap.forEach(d=>{ const s=d.data().status; if(d.id==="Grater") document.getElementById('eqGrater').innerText=s; if(d.id==="Crusher") document.getElementById('eqCrusher').innerText=s; if(d.id==="Water-Cool Gen") document.getElementById('eqGen1').innerText=s; if(d.id==="195 Gen") document.getElementById('eqGen2').innerText=s; });
+}
+
+// ===== USER MANAGEMENT =====
+window.createUser = async function(){
+  const name=document.getElementById('newName').value.trim();
+  const email=document.getElementById('newEmail').value.trim();
+  const pass=document.getElementById('newPass').value.trim();
+  const role=document.getElementById('newRole').value;
+  const msg=document.getElementById('userMsg');
+  if(!name||!email||!pass){ msg.innerText="Fill name, email, password"; return; }
+  try{
+    const secondApp=initializeApp(firebaseConfig,"second"+Date.now());
+    const { getAuth: getAuth2, createUserWithEmailAndPassword: create2 } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+    const auth2=getAuth2(secondApp);
+    const cred=await create2(auth2,email,pass);
+    await setDoc(doc(db,"users",cred.user.uid),{name,email,role,active:true,createdAt:new Date().toISOString()});
+    msg.style.color="#22c55e"; msg.innerText="User created: "+name+" ("+role+") ✅";
+    document.getElementById('newName').value=""; document.getElementById('newEmail').value=""; document.getElementById('newPass').value="";
+    loadUsers();
+  }catch(e){ msg.style.color="#f87171"; msg.innerText=e.message; }
+}
+async function loadUsers(){
+  const snap=await getDocs(collection(db,"users"));
+  let html="";
+  snap.forEach(d=>{ const u=d.data(); html+=`<div class="usercard"><div><b>${u.name}</b><br><small>${u.email} - ${u.role} - ${u.active?"Active":"Disabled"}</small></div><div><button class="btn-green" onclick="toggleUser('${d.id}',${u.active})">${u.active?"Disable":"Enable"}</button> <button onclick="changeRole('${d.id}','${u.role}')">Role</button> <button class="btn-red" onclick="deleteUser('${d.id}')">Delete</button></div></div>`; });
+  document.getElementById('userList').innerHTML=html||"No users yet";
+}
+window.toggleUser=async function(id,active){ await updateDoc(doc(db,"users",id),{active:!active}); loadUsers(); }
+window.changeRole=async function(id,oldRole){ const r=prompt("New role: admin / manager / staff / viewer",oldRole); if(r){ await updateDoc(doc(db,"users",id),{role:r}); loadUsers(); } }
+window.deleteUser=async function(id){ if(confirm("Delete this user?")){ await deleteDoc(doc(db,"users",id)); loadUsers(); } }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
