@@ -96,10 +96,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:8px;borde
 <option value="Garri">Garri</option>
 <option value="Palm Kernel">Palm Kernel</option>
 </select>
-<input id="saleQty" type="number" placeholder="Quantity (bags / kg)">
 <input id="salePrice" type="number" placeholder="Amount ₦">
-<input id="saleCustomer" placeholder="Customer Name (optional)">
-<input id="saleNote" placeholder="Note (optional)">
 <button class="btn-yellow" onclick="addSale()">Save Sale</button>
 <p id="saleMsg"></p></div>
 </div>
@@ -236,13 +233,11 @@ window.showView = function(id){
 window.addSale = async function(){
   const date=document.getElementById('saleDate').value||todayStr();
   const item=document.getElementById('saleItem').value;
-  const qty=Number(document.getElementById('saleQty').value||0);
   const amount=Number(document.getElementById('salePrice').value||0);
-  const customer=document.getElementById('saleCustomer').value;
   if(!amount){ document.getElementById('saleMsg').innerText="Enter amount"; return; }
-  await addDoc(collection(db,"sales"),{date,item,qty,amount,customer,note:document.getElementById('saleNote').value,by:localStorage.getItem('memoh_name'),createdAt:new Date().toISOString()});
+  await addDoc(collection(db,"sales"),{date,item,amount,by:localStorage.getItem('memoh_name'),createdAt:new Date().toISOString()});
   document.getElementById('saleMsg').style.color="#22c55e"; document.getElementById('saleMsg').innerText="Sale saved ✅";
-  document.getElementById('saleQty').value=""; document.getElementById('salePrice').value="";
+  document.getElementById('salePrice').value="";
   loadData(); setTimeout(()=>showView('viewHome'),600);
 }
 window.addExpense = async function(){
@@ -260,7 +255,7 @@ async function loadData(){
   const sSnap=await getDocs(query(collection(db,"sales"),where("date","==",date)));
   const eSnap=await getDocs(query(collection(db,"expenses"),where("date","==",date)));
   let sTotal=0, eTotal=0, html="<table><tr><th>Type</th><th>Item</th><th>Amount</th><th>By</th></tr>";
-  sSnap.forEach(d=>{ const x=d.data(); sTotal+=Number(x.amount||0); html+=`<tr><td>🟢 Sale</td><td>${x.item} ${x.qty? "("+x.qty+")":""}</td><td>${fmt(x.amount)}</td><td>${x.by||""}</td></tr>`; });
+  sSnap.forEach(d=>{ const x=d.data(); sTotal+=Number(x.amount||0); html+=`<tr><td>🟢 Sale</td><td>${x.item}</td><td>${fmt(x.amount)}</td><td>${x.by||""}</td></tr>`; });
   eSnap.forEach(d=>{ const x=d.data(); eTotal+=Number(x.amount||0); html+=`<tr><td>🔴 Expense</td><td>${x.item}</td><td>${fmt(x.amount)}</td><td>${x.by||""}</td></tr>`; });
   html+="</table>"; if(sTotal===0 && eTotal===0) html="No activity for this date yet.";
   document.getElementById('activityLog').innerHTML=html;
