@@ -92,7 +92,10 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:8px;borde
 <div id="viewSale" class="hidden">
 <div class="card"><h3>🌿 Add Sale</h3>
 <input type="date" id="saleDate">
-<select id="saleItem"><option>Garri - White</option><option>Garri - Yellow</option><option>Cassava - Tuber</option><option>Fufu</option><option>Starch</option><option>Other</option></select>
+<select id="saleItem">
+<option value="Garri">Garri</option>
+<option value="Palm Kernel">Palm Kernel</option>
+</select>
 <input id="saleQty" type="number" placeholder="Quantity (bags / kg)">
 <input id="salePrice" type="number" placeholder="Amount ₦">
 <input id="saleCustomer" placeholder="Customer Name (optional)">
@@ -105,7 +108,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:8px;borde
 <div id="viewExpense" class="hidden">
 <div class="card"><h3>⛽ Add Expense</h3>
 <input type="date" id="expDate">
-<select id="expItem"><option>Fuel - Diesel</option><option>Fuel - Petrol</option><option>Transport</option><option>Labour</option><option>Maintenance</option><option>Cassava Purchase</option><option>Firewood</option><option>Other</option></select>
+<select id="expItem"><option>Fuel - Diesel</option><option>Fuel - Petrol</option><option>Transport</option><option>Labour</option><option>Maintenance</option><option>Cassava Purchase</option><option>Palm Kernel Purchase</option><option>Other</option></select>
 <input id="expAmount" type="number" placeholder="Amount ₦">
 <input id="expNote" placeholder="Note (optional)">
 <button class="btn-yellow" onclick="addExpense()">Save Expense</button>
@@ -291,7 +294,7 @@ async function loadEq(){
   snap.forEach(d=>{ const s=d.data().status; if(d.id==="Grater") document.getElementById('eqGrater').innerText=s; if(d.id==="Crusher") document.getElementById('eqCrusher').innerText=s; if(d.id==="Water-Cool Gen") document.getElementById('eqGen1').innerText=s; if(d.id==="195 Gen") document.getElementById('eqGen2').innerText=s; });
 }
 
-// ===== REWRITTEN USER MANAGEMENT MODULE =====
+// ===== USER MANAGEMENT MODULE =====
 window.createUser = async function(){
   const name = document.getElementById('newName').value.trim();
   const email = document.getElementById('newEmail').value.trim();
