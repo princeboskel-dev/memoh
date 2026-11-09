@@ -18,6 +18,7 @@
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .mini{background:#0f172a;padding:10px;border-radius:10px;font-size:13px}
 input,select{width:100%;padding:12px;margin:7px 0;border-radius:8px;border:none;font-size:15px}
+input:disabled{background:#334155;color:#94a3b8;cursor:not-allowed}
 button{padding:12px;border:none;border-radius:8px;font-weight:bold;cursor:pointer}
 .btn-yellow{background:#f59e0b;width:100%}.btn-red{background:#ef4444;color:white}.btn-green{background:#22c55e}.btn-grey{background:#475569;color:white}
 .bottom{position:fixed;bottom:0;left:0;right:0;background:#1e293b;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:10px 0;text-align:center;font-size:12px;z-index:20}
@@ -200,14 +201,34 @@ function openApp(userData){
   const role=localStorage.getItem('memoh_role')||userData.role;
   document.getElementById('helloName').innerText="Hi, "+(localStorage.getItem('memoh_name')||"User");
   document.getElementById('helloRole').innerText=role.toUpperCase();
-  if(role==='admin'){ document.getElementById('adminHomeBtn').classList.remove('hidden'); }
+  
+  const t=todayStr();
+  document.getElementById('logDate').value=t; 
+  document.getElementById('saleDate').value=t; 
+  document.getElementById('expDate').value=t;
+  document.getElementById('todayLabel').innerText=t; 
+  document.getElementById('repFrom').value=t; 
+  document.getElementById('repTo').value=t;
+
+  // ===== ROLE BASED RESTRICTIONS =====
+  if(role==='admin'){ 
+    document.getElementById('adminHomeBtn').classList.remove('hidden'); 
+    document.getElementById('logDate').disabled = false;
+    document.getElementById('saleDate').disabled = false;
+    document.getElementById('expDate').disabled = false;
+  } else {
+    // Non-admin users cannot change or access past dates
+    document.getElementById('logDate').disabled = true;
+    document.getElementById('saleDate').disabled = true;
+    document.getElementById('expDate').disabled = true;
+  }
+
   if(role==='staff'){ document.getElementById('reportsBtn').style.display='none'; document.getElementById('navReports').style.display='none'; }
   if(role==='viewer'){ document.getElementById('viewSale').innerHTML="<div class='card'>Viewer cannot add sales</div>"; }
-  const t=todayStr();
-  document.getElementById('logDate').value=t; document.getElementById('saleDate').value=t; document.getElementById('expDate').value=t;
-  document.getElementById('todayLabel').innerText=t; document.getElementById('repFrom').value=t; document.getElementById('repTo').value=t;
+  
   loadData(); loadEq();
 }
+
 onAuthStateChanged(auth, async (user)=>{
   if(user){
     const snap=await getDoc(doc(db,"users",user.uid));
@@ -231,7 +252,8 @@ window.showView = function(id){
 
 // ===== SALES / EXPENSES =====
 window.addSale = async function(){
-  const date=document.getElementById('saleDate').value||todayStr();
+  const role = localStorage.getItem('memoh_role');
+  const date = (role === 'admin') ? (document.getElementById('saleDate').value || todayStr()) : todayStr();
   const item=document.getElementById('saleItem').value;
   const amount=Number(document.getElementById('salePrice').value||0);
   if(!amount){ document.getElementById('saleMsg').innerText="Enter amount"; return; }
@@ -240,8 +262,10 @@ window.addSale = async function(){
   document.getElementById('salePrice').value="";
   loadData(); setTimeout(()=>showView('viewHome'),600);
 }
+
 window.addExpense = async function(){
-  const date=document.getElementById('expDate').value||todayStr();
+  const role = localStorage.getItem('memoh_role');
+  const date = (role === 'admin') ? (document.getElementById('expDate').value || todayStr()) : todayStr();
   const item=document.getElementById('expItem').value;
   const amount=Number(document.getElementById('expAmount').value||0);
   if(!amount){ document.getElementById('expMsg').innerText="Enter amount"; return; }
@@ -250,8 +274,10 @@ window.addExpense = async function(){
   document.getElementById('expAmount').value="";
   loadData(); setTimeout(()=>showView('viewHome'),600);
 }
+
 async function loadData(){
-  const date=document.getElementById('logDate').value||todayStr();
+  const role = localStorage.getItem('memoh_role');
+  const date = (role === 'admin') ? (document.getElementById('logDate').value || todayStr()) : todayStr();
   const sSnap=await getDocs(query(collection(db,"sales"),where("date","==",date)));
   const eSnap=await getDocs(query(collection(db,"expenses"),where("date","==",date)));
   let sTotal=0, eTotal=0, html="<table><tr><th>Type</th><th>Item</th><th>Amount</th><th>By</th></tr>";
