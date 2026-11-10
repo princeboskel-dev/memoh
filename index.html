@@ -7,7 +7,8 @@
 <style>
 *{box-sizing:border-box}body{background:#0f172a;color:white;font-family:Arial;margin:0;padding-bottom:80px}
 .top{background:#1e293b;padding:15px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10}
-.logo{width:50px;height:50px;background:#f59e0b;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px}
+.logo{width:50px;height:50px;background:transparent;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.logo img{width:100%;height:100%;object-fit:cover;border-radius:12px}
 .live{font-size:11px;background:#14532d;color:#4ade80;padding:3px 8px;border-radius:20px}
 .card{background:#1e293b;margin:12px;padding:16px;border-radius:14px}
 .big{font-size:28px;font-weight:bold;margin:8px 0}
@@ -35,9 +36,9 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:8px;borde
 <!-- ========== LOGIN PAGE ========== -->
 <div id="loginPage">
 <div class="loginbox">
-<div style="font-size:45px">🌾</div>
+<div class="logo" style="width:80px;height:80px;margin:0 auto 10px auto;"><img src="logo.jpg" alt="Logo"></div>
 <h2 style="margin:5px 0">MEMOH AGRO MILL</h2>
-<p style="color:#94a3b8;margin:0">Operations Hub - Login</p>
+<p style="color:#94a3b8;margin:0 0 15px 0">Operations Hub - Login</p>
 <input id="loginEmail" placeholder="Email e.g. imoh@memoh.com">
 <input id="loginPass" type="password" placeholder="Password">
 <button class="btn-yellow" onclick="doLogin()">🔓 Login</button>
@@ -50,7 +51,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:8px;borde
 <div id="mainApp" class="hidden">
 
 <div class="top">
-<div class="logo">🌾</div>
+<div class="logo"><img src="logo.jpg" alt="Logo"></div>
 <div style="flex:1"><b>MEMOH AGRO MILL</b><br><small>Operations Hub</small> <span class="live">● LIVE - Firebase</span></div>
 <div style="text-align:right"><small id="helloName">Hi</small><br><small id="helloRole" style="color:#f59e0b"></small><br><button class="btn-grey" style="padding:6px 10px;margin-top:4px" onclick="doLogout()">Logout</button></div>
 </div>
