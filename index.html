@@ -283,7 +283,7 @@ async function loadData(){
   
   let sTotal=0, eTotal=0;
   let html="<table><tr><th>Type</th><th>Item</th><th>Amount</th><th>By</th>";
-  if(role === 'admin') html += "<th>Action</th>";
+  if(role === 'admin') html += "<th>Actions</th>";
   html += "</tr>";
 
   sSnap.forEach(d=>{ 
@@ -291,7 +291,10 @@ async function loadData(){
     sTotal+=Number(x.amount||0); 
     html+=`<tr><td>🟢 Sale</td><td>${x.item}</td><td>${fmt(x.amount)}</td><td>${x.by||""}</td>`;
     if(role === 'admin') {
-      html+=`<td><button class="btn-grey" style="padding:4px 8px;font-size:11px" onclick="editAmount('sales','${d.id}',${x.amount})">Edit Amt</button></td>`;
+      html+=`<td>
+        <button class="btn-grey" style="padding:4px 6px;font-size:11px;margin-right:4px" onclick="editTransaction('sales','${d.id}','${x.item}',${x.amount})">Edit</button>
+        <button class="btn-red" style="padding:4px 6px;font-size:11px" onclick="deleteTransaction('sales','${d.id}')">Delete</button>
+      </td>`;
     }
     html+=`</tr>`; 
   });
@@ -301,7 +304,10 @@ async function loadData(){
     eTotal+=Number(x.amount||0); 
     html+=`<tr><td>🔴 Expense</td><td>${x.item}</td><td>${fmt(x.amount)}</td><td>${x.by||""}</td>`;
     if(role === 'admin') {
-      html+=`<td><button class="btn-grey" style="padding:4px 8px;font-size:11px" onclick="editAmount('expenses','${d.id}',${x.amount})">Edit Amt</button></td>`;
+      html+=`<td>
+        <button class="btn-grey" style="padding:4px 6px;font-size:11px;margin-right:4px" onclick="editTransaction('expenses','${d.id}','${x.item}',${x.amount})">Edit</button>
+        <button class="btn-red" style="padding:4px 6px;font-size:11px" onclick="deleteTransaction('expenses','${d.id}')">Delete</button>
+      </td>`;
     }
     html+=`</tr>`; 
   });
@@ -314,13 +320,31 @@ async function loadData(){
 }
 window.loadData=loadData;
 
-// ===== ADMIN EDIT AMOUNT =====
-window.editAmount = async function(collectionName, docId, currentAmount){
+// ===== ADMIN EDIT TRANSACTION (TYPE, ITEM, AMOUNT) =====
+window.editTransaction = async function(collectionName, docId, currentItem, currentAmount){
   const role = localStorage.getItem('memoh_role');
   if(role !== 'admin') {
-    alert("Unauthorized: Only Admin can edit transaction amounts.");
+    alert("Unauthorized: Only Admin can edit transactions.");
     return;
   }
+
+  // 1. Select Type (Sales vs Expenses)
+  const currentType = collectionName === 'sales' ? 'Sale' : 'Expense';
+  const newTypeInput = prompt("Enter Type ('Sale' or 'Expense'):", currentType);
+  if(newTypeInput === null) return;
+  const targetType = newTypeInput.trim().toLowerCase();
+  
+  if(targetType !== 'sale' && targetType !== 'expense'){
+    alert("Invalid Type! Must be 'Sale' or 'Expense'.");
+    return;
+  }
+
+  // 2. Select Item
+  const newItemPrompt = targetType === 'sale' ? "Enter Item (e.g. Garri or Palm Kernel):" : "Enter Item (e.g. Fuel - Diesel, Labour, etc.):";
+  const newItem = prompt(newItemPrompt, currentItem);
+  if(newItem === null || !newItem.trim()) return;
+
+  // 3. Enter Amount
   const val = prompt("Enter new amount (₦):", currentAmount);
   if(val === null) return;
   const newAmount = Number(val);
@@ -328,11 +352,49 @@ window.editAmount = async function(collectionName, docId, currentAmount){
     alert("Please enter a valid amount.");
     return;
   }
+
+  const targetCollection = targetType === 'sale' ? 'sales' : 'expenses';
+
   try {
-    await updateDoc(doc(db, collectionName, docId), { amount: newAmount });
+    if(targetCollection === collectionName) {
+      // Direct update if collection type didn't change
+      await updateDoc(doc(db, collectionName, docId), {
+        item: newItem.trim(),
+        amount: newAmount
+      });
+    } else {
+      // Move document between sales <-> expenses collection if type changed
+      const oldSnap = await getDoc(doc(db, collectionName, docId));
+      if(oldSnap.exists()){
+        const oldData = oldSnap.data();
+        await addDoc(collection(db, targetCollection), {
+          ...oldData,
+          item: newItem.trim(),
+          amount: newAmount
+        });
+        await deleteDoc(doc(db, collectionName, docId));
+      }
+    }
     loadData();
   } catch(e) {
-    alert("Failed to update amount: " + e.message);
+    alert("Failed to update transaction: " + e.message);
+  }
+}
+
+// ===== ADMIN DELETE TRANSACTION =====
+window.deleteTransaction = async function(collectionName, docId){
+  const role = localStorage.getItem('memoh_role');
+  if(role !== 'admin') {
+    alert("Unauthorized: Only Admin can delete transactions.");
+    return;
+  }
+  if(confirm("Are you sure you want to delete this transaction record?")){
+    try {
+      await deleteDoc(doc(db, collectionName, docId));
+      loadData();
+    } catch(e) {
+      alert("Failed to delete transaction: " + e.message);
+    }
   }
 }
 
